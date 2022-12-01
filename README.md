@@ -11,7 +11,7 @@ mvn clean install
 ##### add package form repository
 ```
 <dependency>
-    <groupId>com.github.freeapis</groupId>
+    <groupId>com.github.yujiaao</groupId>
     <artifactId>image-size</artifactId>
     <version>1.0</version>
 </dependency>
@@ -43,4 +43,5 @@ ICO
 BMP
 GIF
 PSD
+WEBP
 ```

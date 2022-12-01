@@ -5,6 +5,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,16 +21,17 @@ import java.util.Map;
  */
 public class Image {
 
-    private static final long MAX_BUFFER_SIZE = 512 * 1024;
+    private static final long MAX_BUFFER_SIZE = 1024 * 1024;
 
     private static final Map<Byte, Parser> IMAGES =
             new HashMap<Byte, Parser>() {{
                 put((byte) 0x89, new PNG());
-                put((byte) 0xff, new JPG());
+                put((byte) 0xff, new Jpeg());
                 put((byte) 0x47, new GIF());
                 put((byte) 0x42, new BMP());
                 put((byte) 0x38, new PSD());
                 put((byte) 0x00, new ICO());
+                put((byte) 0x49, new Webp());
             }};
 
     public static Pair<Integer, Integer> sizeOf(File image) throws IOException {
@@ -37,11 +39,24 @@ public class Image {
 
         int bufferSize = (int) Math.min(imageSize, MAX_BUFFER_SIZE);
 
+
+
+       try( FileInputStream fin = new FileInputStream(image)){
+         return sizeOf(fin, bufferSize);
+       }
+
+
+    }
+
+
+    public static Pair<Integer, Integer> sizeOf(InputStream in, long contentLength) throws IOException {
+        long imageSize = contentLength;
+
+        int bufferSize = (int) Math.min(imageSize, MAX_BUFFER_SIZE);
+
         byte[] bytes = new byte[bufferSize];
 
-        FileInputStream fin = new FileInputStream(image);
-
-        fin.read(bytes);
+        in.read(bytes);
 
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
 

@@ -134,6 +134,15 @@ public class ByteUtil {
         return result;
     }
 
+    public  static  boolean sliceEq (ByteBuffer src, int start, byte[] dest) {
+        for (int i = start, j = 0; j < dest.length;) {
+            if (src.get(i++) != dest[j++]) {
+                return false;
+            }
+        }
+        return true;
+    };
+
     /**
      * 从buffer中获取指定字节的字符串
      * @param buffer
@@ -242,14 +251,36 @@ public class ByteUtil {
         return Integer.toUnsignedLong(ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getInt());
     }
 
+    public static byte[] str2arr (String str) {
+        return str2arr(str,null);
+    }
+    public static byte[] str2arr (String str, String format) {
+        byte[] arr = new byte[str.length()];
+        int i = 0;
+
+        if ("hex".equals(format)) {
+            while (i < str.length()) {
+                arr[i/2]= (byte) Integer.parseInt(  str.subSequence(i, i + 2).toString(), 16);
+                i += 2;
+            }
+        } else {
+            for (; i < str.length(); i++) {
+                /* eslint-disable no-bitwise */
+                arr[i]= (byte) (str.charAt(i) & 0xFF);
+            }
+        }
+
+        return arr;
+    }
+
     public static void main(String[] args) {
 		/*System.out.println(toString(new byte[]{-128,127,32,64},16));
 		System.out.println(toInt(new byte[]{127,-1,-1,-1}));
 		System.out.println(toLong(new byte[]{127,-1,-1,-1,-1,-1,-1,-1}));
-		
+
 		System.out.println(toLong(longToBytes(Long.MAX_VALUE)));
 		System.out.println(toInt(intToBytes(Integer.MAX_VALUE)));
-		
+
 		System.out.println(toString(intToBytes(2), 2));
 		System.out.println(toString(hexString2Bytes("FF"),2));
 
