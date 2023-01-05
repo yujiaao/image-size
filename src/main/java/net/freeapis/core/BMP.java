@@ -1,5 +1,7 @@
 package net.freeapis.core;
 
+import net.freeapis.core.ByteUtil;
+import net.freeapis.core.Image;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.nio.ByteBuffer;

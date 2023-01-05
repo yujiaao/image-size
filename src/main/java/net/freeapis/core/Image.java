@@ -1,5 +1,7 @@
 package net.freeapis.core;
 
+import net.freeapis.core.utils.HttpClientUtils;
+import net.freeapis.core.utils.SimpleUrlUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
@@ -8,7 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * freeapis,Inc.
@@ -21,7 +25,7 @@ import java.util.Map;
  */
 public class Image {
 
-    private static final long MAX_BUFFER_SIZE = 1024 * 1024;
+    private static final long MAX_BUFFER_SIZE = 1024 * 10;
 
     private static final Map<Byte, Parser> IMAGES =
             new HashMap<Byte, Parser>() {{
@@ -49,21 +53,40 @@ public class Image {
     }
 
 
-    public static Pair<Integer, Integer> sizeOf(InputStream in, long contentLength) throws IOException {
-        long imageSize = contentLength;
+    public static Pair<Integer, Integer> sizeOf(InputStream in, int contentLength)  {
+        try {
+            long imageSize = contentLength;
 
-        int bufferSize = (int) Math.min(imageSize, MAX_BUFFER_SIZE);
+            int bufferSize = (int) Math.min(imageSize, MAX_BUFFER_SIZE);
 
-        byte[] bytes = new byte[bufferSize];
+            byte[] bytes = new byte[bufferSize];
 
-        in.read(bytes);
+            in.read(bytes);
 
-        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+            ByteBuffer buffer = ByteBuffer.wrap(bytes);
 
-        Parser parser = selectParser(buffer);
+            Parser parser = selectParser(buffer);
 
-        if(parser != null){
-            return parser.size(buffer);
+            if (parser != null) {
+                return parser.size(buffer);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return Pair.of(0,0);
+    }
+
+
+    public static Pair<Integer, Integer> sizeOf(ByteBuffer buffer, int contentLength)  {
+        try {
+            Parser parser = selectParser(buffer);
+
+            if (parser != null) {
+                return parser.size(buffer);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
         return Pair.of(0,0);
@@ -114,4 +137,20 @@ public class Image {
 
         Pair<Integer,Integer> size(ByteBuffer buffer);
     }
+
+
+    public static Pair<Integer, Integer> doGet(String urlString) {
+        return SimpleUrlUtils.get(urlString, Image::sizeOf);
+    }
+
+
+    public static Pair<Integer, Integer> doGetWithPool(String urlString) {
+        return HttpClientUtils.get(urlString, Image::sizeOf);
+    }
+
+    public static List<Pair<String, Pair<Integer, Integer>>> batchGet(List<String> urlString) {
+      // return urlString.stream().parallel().map(it -> Pair.of(it, doGetWithPool(it))).collect(Collectors.toList() );
+        return urlString.stream().parallel().map(it -> Pair.of(it, doGet(it))).collect(Collectors.toList() );
+    }
+
 }
