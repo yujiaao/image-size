@@ -11,6 +11,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Unit test for simple App.
  */
@@ -108,6 +110,13 @@ public class AppTest
         );
         System.out.println("time:"+sw.getTime()+"ms");
 
+    }
+
+    @Test public void testWebp(){
+        Pair<Integer, Integer> size = Image.sizeOf(this.getClass().getResourceAsStream("/sample.webp"),
+                50_408);
+        assertEquals(1050,size.getLeft());
+        assertEquals(700,size.getRight());
     }
 
 }

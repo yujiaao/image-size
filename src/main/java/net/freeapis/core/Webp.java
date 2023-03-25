@@ -24,7 +24,7 @@ public class Webp implements Image.Parser {
         data.get(bytes, 0, 6);
         data.position(0);
 
-        if (bytes[3] != 0x9D || bytes[4] != 0x01 || bytes[5] != 0x2A) {
+        if (bytes[3] != (byte)0x9D || bytes[4] != (byte)0x01 || bytes[5] != (byte)0x2A) {
             // bad code block signature
             return null;
         }
@@ -81,9 +81,12 @@ public class Webp implements Image.Parser {
         int exif_orientation = 0;
         long fileLength = readUInt32LE(data, 4) + 8;
 
-        if (fileLength > data.limit()) {
-            return null;
-        }
+        //if (fileLength > data.limit()) {
+        //    return null;
+        //}
+        fileLength = Math.min(fileLength, data.limit());
+
+        data.position(offset);
 
         while (offset + 8 < fileLength) {
             if (data.get(offset) == 0) {
@@ -93,24 +96,37 @@ public class Webp implements Image.Parser {
             }
 
             byte[] bytes = new byte[4];
-            data.get(bytes, offset, 4);
+            data.get(bytes, 0, 4);
+            offset+=4;
+
             String header = new String(bytes);
-            long length = readUInt32LE(data, offset + 4);
+            long length = readUInt32LE(data, offset);
+            offset += 4;
 
             if (Objects.equals(header, "VP8 ") && length >= 10) {
-                result = parseVP8(data, offset + 8);
-            } else if (Objects.equals(header, "VP8L") && length >= 9) {
-                result = parseVP8L(data, offset + 8);
+                result = parseVP8(data, offset);
+
+            } else if (Objects.equals(header, "VP8L") && length >= 5) {
+                result = parseVP8L(data, offset);
+
             } else if (Objects.equals(header, "VP8X") && length >= 10) {
-                result = parseVP8X(data, offset + 8);
-            } else if (Objects.equals(header, "EXIF")) {
+                result = parseVP8X(data, offset);
+
+            } else if (Objects.equals(header, "EXIF") && length >= 4) {
                 exif_orientation = 0;//TODO exif.get_orientation(data.slice(offset + 8, offset + 8 + length));
 
                 // exif is the last chunk we care about, stop after it
                 offset = Integer.MAX_VALUE;
-            }
+            } else {
+                offset += length;
 
-            offset += 8 + length;
+
+                //getWebpSize(parser, sandbox);
+
+        }
+
+
+        offset += 8 + length;
         }
 
         if (result != null) {
