@@ -119,4 +119,12 @@ public class AppTest
         assertEquals(700,size.getRight());
     }
 
+    @Test public void testBadCase1Jpeg(){
+        Pair<Integer, Integer> size = Image.sizeOf(this.getClass().getResourceAsStream("/55.jpg"),
+                4_650_249);
+
+        assertEquals(6000,size.getLeft());
+        assertEquals(2967,size.getRight());
+    }
+
 }

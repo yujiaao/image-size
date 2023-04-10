@@ -4,6 +4,7 @@ import net.freeapis.core.utils.HttpClientUtils;
 import net.freeapis.core.utils.SimpleUrlUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.naming.SizeLimitExceededException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  */
 public class Image {
 
-    private static final long MAX_BUFFER_SIZE = 1024 * 10;
+    private static final int MAX_BUFFER_SIZE = 1024 * 10;
 
     private static final Map<Byte, Parser> IMAGES =
             new HashMap<Byte, Parser>() {{
@@ -40,24 +41,37 @@ public class Image {
 
     public static Pair<Integer, Integer> sizeOf(File image) throws IOException {
         long imageSize = image.length();
-
         int bufferSize = (int) Math.min(imageSize, MAX_BUFFER_SIZE);
-
-
 
        try( FileInputStream fin = new FileInputStream(image)){
          return sizeOf(fin, bufferSize);
        }
-
-
     }
 
 
     public static Pair<Integer, Integer> sizeOf(InputStream in, int contentLength)  {
         try {
-            long imageSize = contentLength;
+            try {
+                if(in.markSupported()) {in.mark(MAX_BUFFER_SIZE *10);}
+                return sizeOf(in, contentLength, MAX_BUFFER_SIZE);
+            }catch( SizeLimitExceededException e){
+                if(in.markSupported()) {
+                    in.reset();
+                    return sizeOf(in, contentLength, Math.min(contentLength, MAX_BUFFER_SIZE * 10));
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
-            int bufferSize = (int) Math.min(imageSize, MAX_BUFFER_SIZE);
+        return Pair.of(0,0);
+    }
+
+    public static Pair<Integer, Integer> sizeOf(InputStream in, int contentLength, int maxBufferSize) throws SizeLimitExceededException, IOException {
+
+            int imageSize = contentLength;
+
+            int bufferSize = Math.min(imageSize, maxBufferSize);
 
             byte[] bytes = new byte[bufferSize];
 
@@ -70,9 +84,6 @@ public class Image {
             if (parser != null) {
                 return parser.size(buffer);
             }
-        }catch (Exception e){
-            e.printStackTrace();
-        }
 
         return Pair.of(0,0);
     }
@@ -135,7 +146,7 @@ public class Image {
 
         boolean isValid(ByteBuffer buffer);
 
-        Pair<Integer,Integer> size(ByteBuffer buffer);
+        Pair<Integer,Integer> size(ByteBuffer buffer) throws SizeLimitExceededException;
     }
 
 

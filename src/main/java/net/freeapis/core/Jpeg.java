@@ -2,6 +2,7 @@ package net.freeapis.core;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.naming.SizeLimitExceededException;
 import java.nio.ByteBuffer;
 
 import static net.freeapis.core.ByteUtil.*;
@@ -44,7 +45,7 @@ class Jpeg implements Image.Parser {
     }
 
     @Override
-    public Pair<Integer, Integer> size(ByteBuffer data) {
+    public Pair<Integer, Integer> size(ByteBuffer data) throws SizeLimitExceededException {
         if (data.limit() < 2) {
             return null;
         }
@@ -61,7 +62,7 @@ class Jpeg implements Image.Parser {
             // skip until we see 0xFF, see https://github.com/nodeca/probe-image-size/issues/68
             for (;;) {
                 if (data.limit() - offset < 2) {
-                    return null;
+                    throw new SizeLimitExceededException(data.limit()+"");
                 }
                 if (data.get(offset++) ==  (byte)0xFF) {
                     break;
