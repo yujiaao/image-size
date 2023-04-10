@@ -5,10 +5,7 @@ import net.freeapis.core.utils.SimpleUrlUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.naming.SizeLimitExceededException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
@@ -50,18 +47,34 @@ public class Image {
 
 
     public static Pair<Integer, Integer> sizeOf(InputStream in, int contentLength)  {
+        boolean needClose = false;
         try {
+            int len = Math.min(contentLength, MAX_BUFFER_SIZE*10);
+
+            if (!in.markSupported()){
+                in = new BufferedInputStream(in, len);
+                needClose = true;
+            }
+
             try {
-                if(in.markSupported()) {in.mark(MAX_BUFFER_SIZE *10);}
+                if(in.markSupported()) {in.mark(len);}
                 return sizeOf(in, contentLength, MAX_BUFFER_SIZE);
             }catch( SizeLimitExceededException e){
                 if(in.markSupported()) {
                     in.reset();
-                    return sizeOf(in, contentLength, Math.min(contentLength, MAX_BUFFER_SIZE * 10));
+                    return sizeOf(in, contentLength, Math.min(contentLength, len));
                 }
             }
         }catch (Exception e){
             e.printStackTrace();
+        }finally {
+            if(needClose){
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
         return Pair.of(0,0);
