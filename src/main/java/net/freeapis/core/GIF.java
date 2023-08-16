@@ -28,4 +28,9 @@ class GIF implements Image.Parser{
                 ByteUtil.readUInt16LE(buffer, 8)
         );
     }
+
+    @Override
+    public String getType() {
+        return "gif";
+    }
 }

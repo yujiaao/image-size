@@ -25,6 +25,12 @@ class PNG implements Image.Parser {
      */
     private static final String PNG_FRIED_CHUNK_NAME = "CgBI";
 
+
+    @Override
+    public String getType() {
+        return "png";
+    }
+
     @Override
     public boolean isValid(ByteBuffer buffer) {
         String pngSignature = ByteUtil.readString(buffer, "ascii", 1, 8);

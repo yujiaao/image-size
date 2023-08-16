@@ -26,4 +26,9 @@ class BMP implements Image.Parser {
                 Math.abs(ByteUtil.readInt32LE(buffer, 8))
         );
     }
+
+    @Override
+    public String getType() {
+        return "bmp";
+    }
 }

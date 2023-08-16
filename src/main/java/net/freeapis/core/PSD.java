@@ -15,6 +15,11 @@ import java.nio.ByteBuffer;
 class PSD implements Image.Parser{
 
     @Override
+    public String getType() {
+        return "psd";
+    }
+
+    @Override
     public boolean isValid(ByteBuffer buffer) {
         return "8BPS".equals(ByteUtil.readString(buffer,"ascii",0,4));
     }

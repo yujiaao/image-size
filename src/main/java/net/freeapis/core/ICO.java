@@ -81,4 +81,10 @@ class ICO implements Image.Parser {
                 getSizeFromOffset(buffer, offset + 1)
         );
     }
+
+
+    @Override
+    public String getType() {
+        return "ico";
+    }
 }

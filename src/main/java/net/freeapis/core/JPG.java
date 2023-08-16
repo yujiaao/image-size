@@ -29,6 +29,12 @@ class JPG implements Image.Parser {
     private static final int IDF_ENTRY_BYTES = 12;
     private static final int NUM_DIRECTORY_ENTRIES_BYTES = 2;
 
+
+    @Override
+    public String getType() {
+        return "jpg";
+    }
+
     @Override
     public boolean isValid(ByteBuffer buffer) {
         String SOIMarker = ByteUtil.readHexString(buffer, 0, 2);

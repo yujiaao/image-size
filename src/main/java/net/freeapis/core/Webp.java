@@ -17,6 +17,12 @@ public class Webp implements Image.Parser {
     static byte[] SIG_WEBP = str2arr("WEBP");
 
 
+    @Override
+    public String getType() {
+        return "webp";
+    }
+
+
     Size parseVP8(ByteBuffer data, int offset) {
 
         byte[] bytes = new byte[6];
