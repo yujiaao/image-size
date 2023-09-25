@@ -32,7 +32,7 @@ public class AppTest
     public void shouldAnswerWithTrue() throws Exception
     {
         Pair<Integer,Integer> size = Image
-                .sizeOf(new File(ClassLoader.getSystemResource("source.jpg").getFile()));
+                .sizeOf(new File(ClassLoader.getSystemResource("IMG_8236.JPG").getFile()));
         System.out.println("width:" + size.getLeft() + " height:" + size.getRight());
 
         // System.out.println(Image.sizeOf(new File("D:\\GraphicsMagic\\doc-convert\\bug.jpg")));

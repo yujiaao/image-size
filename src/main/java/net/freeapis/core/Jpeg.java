@@ -1,5 +1,6 @@
 package net.freeapis.core;
 
+import net.freeapis.core.utils.ExifUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.naming.SizeLimitExceededException;
@@ -111,6 +112,15 @@ class Jpeg implements Image.Parser {
             // try to get orientation from Exif segment
             if (code ==  (byte)0xE1 && length >= 10 && sliceEq(data, offset, SIG_EXIF)) {
 //                orientation = exif.get_orientation(data.slice(offset + 6, offset + length));
+//                byte[] dest = new byte[length];
+//                int start = offset + 6;
+//                ByteBuffer src = data;
+//                for (int i = start+1, j = 0; i < length;i++) {
+//                    dest[j] = data.get(i);
+//                    j++;
+//                }
+//                orientation = ExifParser.get_orientation(ByteBuffer.wrap(dest));
+                orientation = ExifUtils.getOrientation(data.array());
             }
 
             if (length >= 5 &&
@@ -136,9 +146,11 @@ class Jpeg implements Image.Parser {
 //                    result.orientation = orientation;
 //                }
 
+                if(orientation==90 || orientation == 270){
+                    result = Pair.of(result.getRight(),result.getLeft());
+                }
                 return result;
             }
-
             offset += length;
         }
     }

@@ -45,7 +45,7 @@ public class ExifParser {
         this.big_endian = sig.charAt(0) == 'M';
     }
 
-    public int get_orientation  (ByteBuffer data) {
+    public static int get_orientation  (ByteBuffer data) {
         AtomicInteger orientation = new AtomicInteger();
         try {
             new ExifParser(data, 0, data.limit()).each( (entry) ->{
