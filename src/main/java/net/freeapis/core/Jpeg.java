@@ -120,7 +120,7 @@ class Jpeg implements Image.Parser {
 //                    j++;
 //                }
 //                orientation = ExifParser.get_orientation(ByteBuffer.wrap(dest));
-                orientation = ExifUtils.getOrientation(data.array());
+
             }
 
             if (length >= 5 &&
@@ -146,8 +146,9 @@ class Jpeg implements Image.Parser {
 //                    result.orientation = orientation;
 //                }
 
+                orientation = ExifUtils.getOrientation(data.array());
                 if(orientation==90 || orientation == 270){
-                    result = Pair.of(result.getRight(),result.getLeft());
+                    return Pair.of(result.getRight(),result.getLeft());
                 }
                 return result;
             }

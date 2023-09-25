@@ -4,7 +4,6 @@ import net.freeapis.core.utils.HttpClientUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -36,7 +35,6 @@ public class AppTest
         System.out.println("width:" + size.getLeft() + " height:" + size.getRight());
 
         // System.out.println(Image.sizeOf(new File("D:\\GraphicsMagic\\doc-convert\\bug.jpg")));
-        System.out.println(Image.sizeOf(new File(ClassLoader.getSystemResource("bug.jpg").getFile())));
     }
 
 
