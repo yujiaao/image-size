@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
  */
 public class Image {
 
-    private static final int MAX_BUFFER_SIZE = 1024 * 10;
+    private static final int MAX_BUFFER_SIZE = 1024 * 1024;
 
     private static final Map<Byte, Parser> IMAGES =
-            new HashMap<Byte, Parser>() {{
+            new HashMap<>() {{
                 put((byte) 0x89, new PNG());
                 put((byte) 0xff, new Jpeg());
                 put((byte) 0x47, new GIF());
@@ -49,7 +49,7 @@ public class Image {
     public static Pair<Integer, Integer> sizeOf(InputStream in, int contentLength) {
         boolean needClose = false;
         try {
-            int len = Math.min(contentLength, MAX_BUFFER_SIZE * 10);
+            int len = Math.min(contentLength, MAX_BUFFER_SIZE );
 
             if (!in.markSupported()) {
                 in = new BufferedInputStream(in, len);

@@ -4,6 +4,7 @@ import net.freeapis.core.utils.HttpClientUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -47,6 +48,7 @@ public class AppTest
      *   }
      */
     @Test
+    @Disabled
     public void shouldAnswerWithSlowNet() {
             String slowBigPic  = "http://10.168.1.193/limit/3.jpg";
 
@@ -88,6 +90,7 @@ public class AppTest
 
 
     @Test
+    @Disabled
     public void batchTest() {
         List<String> slowBigPic  = new ArrayList<>();
 
@@ -123,6 +126,14 @@ public class AppTest
 
         assertEquals(6000,size.getLeft());
         assertEquals(2967,size.getRight());
+    }
+
+    @Test public  void testBadCase2Jpeg(){
+        Pair<Integer, Integer> size = Image.sizeOf(this.getClass().getResourceAsStream("/aa.jpg"),
+                3_527_213);
+
+        assertEquals(3072,size.getLeft());
+        assertEquals(4096,size.getRight());
     }
 
 }
